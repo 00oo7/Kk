@@ -1,0 +1,98 @@
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+
+struct Process {
+    int pid;
+    int at;
+    int bt;
+    int priority;
+    int wt;
+    int tat;
+    bool done;
+};
+
+int main() {
+
+    cout << "============================================\n";
+    cout << "   Non-Preemptive Priority Scheduling\n";
+    cout << "============================================\n\n";
+
+    int n;
+    Process p[20];
+    float avgWT = 0, avgTAT = 0;
+
+    cout << "Enter number of processes: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        cout << "\nEnter Arrival Time for P" << i + 1 << ": ";
+        cin >> p[i].at;
+        cout << "Enter Burst Time for P" << i + 1 << ": ";
+        cin >> p[i].bt;
+        cout << "Enter Priority for P" << i + 1 << ": ";
+        cin >> p[i].priority;
+
+        p[i].pid = i + 1;
+        p[i].done = false;
+    }
+
+    int time = 0, completed = 0;
+
+    while (completed < n) {
+        int idx = -1;
+        int minPriority = 9999;
+
+        for (int i = 0; i < n; i++) {
+            if (!p[i].done && p[i].at <= time) {
+                if (p[i].priority < minPriority) {
+                    minPriority = p[i].priority;
+                    idx = i;
+                }
+            }
+        }
+
+        if (idx == -1) {
+            time++;
+        } else {
+            p[idx].wt = time - p[idx].at;
+            time += p[idx].bt;
+            p[idx].tat = p[idx].wt + p[idx].bt;
+            p[idx].done = true;
+            completed++;
+        }
+    }
+
+    cout << "\nPriority Scheduling (Non-Preemptive)\n";
+    cout << left << setw(8) << "PID"
+         << setw(10) << "AT"
+         << setw(10) << "BT"
+         << setw(12) << "Priority"
+         << setw(10) << "WT"
+         << setw(12) << "TAT" << endl;
+
+    cout << "-------------------------------------------------------------\n";
+
+    for (int i = 0; i < n; i++) {
+        cout << left << setw(8) << p[i].pid
+             << setw(10) << p[i].at
+             << setw(10) << p[i].bt
+             << setw(12) << p[i].priority
+             << setw(10) << p[i].wt
+             << setw(12) << p[i].tat
+             << endl;
+
+        avgWT += p[i].wt;
+        avgTAT += p[i].tat;
+    }
+
+    avgWT /= n;
+    avgTAT /= n;
+
+    cout << "\nAverage Waiting Time = " << avgWT << endl;
+    cout << "Average Turnaround Time = " << avgTAT << endl;
+    cout << "\n=== Code Execution Successful ===\n";
+
+    return 0;
+}
